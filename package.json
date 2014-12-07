@@ -1,0 +1,8 @@
+{
+  "name": "hubot-hangouts",
+  "version": "0.0.1",
+  "author": "Hubot",
+  "keywords": "github hubot hangouts adapter",
+  "description": "A Hangouts adapter for Hubot",
+  "main": "./src/hangouts"
+}

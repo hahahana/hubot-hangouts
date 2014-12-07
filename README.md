@@ -1,0 +1,1 @@
+# Hubot Hangouts Adapter
