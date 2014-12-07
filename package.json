@@ -1,8 +1,12 @@
 {
   "name": "hubot-hangouts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Hubot",
   "keywords": "github hubot hangouts adapter",
   "description": "A Hangouts adapter for Hubot",
-  "main": "./src/hangouts"
+  "main": "./src/hangouts",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hahahana/hubot-hangouts.git"
+  }
 }
