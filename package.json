@@ -8,5 +8,9 @@
   "repository": {
     "type": "git",
     "url": "http://github.com/hahahana/hubot-hangouts.git"
+  },
+  "dependencies": {
+    "selenium-webdriver": "~2.44.0",
+    "underscore": "~1.7.0"
   }
 }
