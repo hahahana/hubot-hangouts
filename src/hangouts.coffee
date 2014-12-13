@@ -14,10 +14,9 @@ class Hangouts extends Adapter
 
       @driver.findElement(webdriver.By.css("[contenteditable='true']")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
-        if @last_message_id
-          console.log('click!')
-          editor.click()
-        editor.sendKeys "#{str/\n}" for str in strings
+        editor.sendKeys "#{str}\n" for str in strings
+        editor.sendKeys "#{str}\n" for str in strings
+        editor.sendKeys "#{str}\n" for str in strings
 
     @last_message_id = envelope.message.id
 
