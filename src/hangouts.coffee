@@ -196,6 +196,19 @@ class Hangouts extends Adapter
             console.log("diff: #{diff.length}")
             @lineLength = newLineLength
 
+            if diff.length > 0
+              regex = new RegExp(@robot.name, 'i')
+
+              diff.map (line) =>
+                if line.match(regex)
+                  saysIndex = line.indexOf('says ')
+                  if saysIndex > 0
+                    line = line.substr(saysIndex + 5)
+                  console.log("I heard you say '#{line}'")
+                  user = @robot.brain.userForId '1'
+                  @receive new TextMessage user, line, @id
+                  @id += 1
+
     @driver = driver
     @id = 1
     hangoutName = process.env.HANGOUT_NAME
