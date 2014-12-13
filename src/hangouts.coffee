@@ -13,6 +13,7 @@ class Hangouts extends Adapter
         console.log "#{str}" for str in strings
 
       @driver.findElement(webdriver.By.className("editable")).then (editor) =>
+        console.log("I tried to tell you #{strings[0]}")
         editor.sendKeys str for str in strings
         editor.sendKeys webdriver.Key.ENTER
 
@@ -69,7 +70,8 @@ class Hangouts extends Adapter
               line == "Send an SMS message..." ||
               line == "History is off" ||
               line == "Read up to here" ||
-              line == "Now"
+              line == "Now" ||
+              line == "Hana"
             @lineLength = lines.length
             @listener.start()
 
@@ -188,12 +190,13 @@ class Hangouts extends Adapter
               line == "Send an SMS message..." ||
               line == "History is off" ||
               line == "Read up to here" ||
-              line == "Now"
+              line == "Now" ||
+              line == "Hana"
             newLineLength = newLinesClean.length
             diff = newLinesClean.slice(@lineLength, newLineLength + 1)
-            console.log("linelengthold: #{@lineLength}")
-            console.log("newLineLength: #{newLineLength}")
-            console.log("diff: #{diff.length}")
+            # console.log("linelengthold: #{@lineLength}")
+            # console.log("newLineLength: #{newLineLength}")
+            # console.log("diff: #{diff.length}")
             @lineLength = newLineLength
 
             if diff.length > 0
@@ -205,9 +208,9 @@ class Hangouts extends Adapter
                   if saysIndex > 0
                     line = line.substr(saysIndex + 5)
                   console.log("I heard you say '#{line}'")
-                  # user = @robot.brain.userForId '1'
-                  # @receive new TextMessage user, line, @id
-                  # @id += 1
+                  user = @robot.brain.userForId '1'
+                  @receive new TextMessage user, line, @id
+                  @id += 1
 
     @driver = driver
     @id = 1
