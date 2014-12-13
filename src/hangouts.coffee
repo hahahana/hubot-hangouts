@@ -202,9 +202,9 @@ class Hangouts extends Adapter
                   if saysIndex > 0
                     line = line.substr(saysIndex + 5)
                   console.log("I heard you say '#{line}'")
-                  user = @robot.brain.userForId '1'
-                  @receive new TextMessage user, line, @id
-                  @id += 1
+                  # user = @robot.brain.userForId '1'
+                  # @receive new TextMessage user, line, @id
+                  # @id += 1
 
     @driver = driver
     @id = 1
