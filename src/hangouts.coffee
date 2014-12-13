@@ -16,6 +16,9 @@ class Hangouts extends Adapter
         console.log("I tried to tell you #{strings[0]}")
         editor.getAttribute('outerHTML').then (html) ->
           console.log(html)
+        if @last_message_id
+          console.log('click!')
+          editor.click()
         editor.sendKeys str for str in strings
         editor.sendKeys webdriver.Key.ENTER
 
