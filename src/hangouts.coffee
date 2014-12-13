@@ -12,7 +12,7 @@ class Hangouts extends Adapter
       else
         console.log "#{str}" for str in strings
 
-      @driver.findElement(webdriver.By.css("[contenteditable='true']")).then (editor) =>
+      @driver.findElement(webdriver.By.css(".Ih.Uf.RP.an")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
         editor.getAttribute('outerHTML').then (html) ->
           console.log(html)
