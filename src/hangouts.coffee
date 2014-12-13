@@ -14,16 +14,8 @@ class Hangouts extends Adapter
 
       @driver.findElement(webdriver.By.css("[contenteditable='true']")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
-
-        @driver.switchTo().activeElement().then (x) =>
-          x.getAttribute('outerHTML').then (html) =>
-            console.log html
-
         editor.sendKeys "#{str}\n" for str in strings
-
-        @driver.switchTo().activeElement().then (x) =>
-          x.getAttribute('outerHTML').then (html) =>
-            console.log html
+        editor.sendKeys "#{str}\n" for str in strings
 
     @last_message_id = envelope.message.id
 
@@ -36,7 +28,7 @@ class Hangouts extends Adapter
 
   run: ->
     self = @
-    @browserTest = process.env.DRIVER || 'chrome'
+    @browserTest = process.env.DRIVER || 'phantomjs'
 
     if @browserTest == 'chrome'
       capability = webdriver.Capabilities.chrome()
