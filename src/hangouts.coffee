@@ -137,7 +137,7 @@ class Hangouts extends Adapter
       self = this
       setInterval ->
         self.emit 'report'
-      , 500
+      , 1000
 
     self.emit 'connected'
     @last_message
