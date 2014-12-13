@@ -17,8 +17,7 @@ class Hangouts extends Adapter
         if @last_message_id
           console.log('click!')
           editor.click()
-        editor.sendKeys str for str in strings
-        editor.sendKeys webdriver.Key.ENTER
+        editor.sendKeys "#{str\n}" for str in strings
 
     @last_message_id = envelope.message.id
 
