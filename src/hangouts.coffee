@@ -44,19 +44,28 @@ class Hangouts extends Adapter
         if @browserTest == 'chrome'
           body.getText().then (text) =>
             linez = text.split("\n")
-            console.log(linez)
             lines = _.reject linez, (line) ->
               line == 'Send a message...' ||
               line.match("is typing") ||
               line.match("is active") ||
               line.match("•")
             @lineLength = lines.length
-            @.emit 'connected'
             @listener.start()
         else
           body.getAttribute('innerHTML').then (html) =>
             linez = html.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
-            console.log(linez)
+            lines = _.reject linez, (line) ->
+              line == 'Send a message...' ||
+              line.match("is typing") ||
+              line.match("is active") ||
+              line.match("•") ||
+              line == " " ||
+              line == "  " ||
+              line == "..." ||
+              line.match("function init()") ||
+              line.match('You blocked')
+            console.log(lines)
+
 
     switchContentToChat = ->
       driver.findElements(webdriver.By.css('.talk_chat_widget')).then (widgets) =>
