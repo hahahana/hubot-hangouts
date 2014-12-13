@@ -14,6 +14,7 @@ class Hangouts extends Adapter
 
       @driver.findElement(webdriver.By.className("editable")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
+        editor.click()
         editor.sendKeys str for str in strings
         editor.sendKeys webdriver.Key.ENTER
 
