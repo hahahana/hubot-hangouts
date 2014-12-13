@@ -12,11 +12,10 @@ class Hangouts extends Adapter
       else
         console.log "#{str}" for str in strings
 
-      @driver.findElement(webdriver.By.tagName("body")).then (editor) =>
+      @driver.findElement(webdriver.By.className("editable")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
         editor.sendKeys str for str in strings
-        editor.findElement(webdriver.By.className("editable")).then (body) =>
-          body.sendKeys webdriver.Key.ENTER
+        editor.sendKeys webdriver.Key.ENTER
 
     @last_message_id = envelope.message.id
 
