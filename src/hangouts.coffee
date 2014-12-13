@@ -14,6 +14,8 @@ class Hangouts extends Adapter
 
       @driver.findElement(webdriver.By.css("[contenteditable='true']")).then (editor) =>
         console.log("I tried to tell you #{strings[0]}")
+        editor.getAttribute('outerHTML').then (html) ->
+          console.log(html)
         editor.sendKeys str for str in strings
         editor.sendKeys webdriver.Key.ENTER
 
