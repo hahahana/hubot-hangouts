@@ -48,7 +48,8 @@ class Hangouts extends Adapter
                     if text == hangoutName
                       greetRoom()
                       true
-                    driver.switchTo().defaultContent();
+                    else
+                      driver.switchTo().defaultContent();
               else
                 driver.switchTo().defaultContent();
 
