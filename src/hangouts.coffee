@@ -16,12 +16,14 @@ class Hangouts extends Adapter
         console.log("I tried to tell you #{strings[0]}")
 
         @driver.switchTo().activeElement().then (x) =>
-          console.log(x)
+          x.getAttribute('outerHTML').then (html) =>
+            console.log html
 
         editor.sendKeys "#{str}\n" for str in strings
 
         @driver.switchTo().activeElement().then (x) =>
-          console.log(x)
+          x.getAttribute('outerHTML').then (html) =>
+            console.log html
 
     @last_message_id = envelope.message.id
 
