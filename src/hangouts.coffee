@@ -27,24 +27,36 @@ class Hangouts extends Adapter
 
   run: ->
     self = @
+    @browserTest = process.env.DRIVER || 'chrome'
 
-    driver = new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build()
+    if @browserTest == 'chrome'
+      capability = webdriver.Capabilities.chrome()
+    else # browserTest
+      capability = webdriver.Capabilities.phantomjs()
+
+    driver = new webdriver.Builder().withCapabilities(capability).build()
 
     greetRoom = =>
       user = @robot.brain.userForId '1'
       @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!", 0
 
       driver.findElement(webdriver.By.tagName('body')).then (body) =>
-        body.getText().then (text) =>
-          # @lines_a = text.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
-          lines = _.reject text.split("\n"), (line) ->
-            line == 'Send a message...' ||
-            line.match("is typing") ||
-            line.match("is active") ||
-            line.match("•")
-          @lineLength = lines.length
-          @.emit 'connected'
-          @listener.start()
+        if @browserTest == 'chrome'
+          body.getText().then (text) =>
+            linez = text.split("\n")
+            console.log(linez)
+            lines = _.reject linez, (line) ->
+              line == 'Send a message...' ||
+              line.match("is typing") ||
+              line.match("is active") ||
+              line.match("•")
+            @lineLength = lines.length
+            @.emit 'connected'
+            @listener.start()
+        else
+          body.getAttribute('innerHTML').then (html) =>
+            linez = html.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
+            console.log(linez)
 
     switchContentToChat = ->
       driver.findElements(webdriver.By.css('.talk_chat_widget')).then (widgets) =>
