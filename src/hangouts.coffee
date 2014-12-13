@@ -6,15 +6,17 @@ _ = require('underscore')
 
 class Hangouts extends Adapter
   send: (envelope, strings...) ->
-    console.log(strings.length)
-    unless process.platform is 'win32'
-      console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
-    else
-      console.log "#{str}" for str in strings
+    if @last_message != strings[0]
+      unless process.platform is 'win32'
+        console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
+      else
+        console.log "#{str}" for str in strings
 
-    @driver.findElement(webdriver.By.className("editable")).then (editor) =>
-      editor.sendKeys str for str in strings
-      editor.sendKeys webdriver.Key.ENTER
+      @driver.findElement(webdriver.By.className("editable")).then (editor) =>
+        editor.sendKeys str for str in strings
+        editor.sendKeys webdriver.Key.ENTER
+
+    @last_message = strings[0]
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -29,13 +31,18 @@ class Hangouts extends Adapter
     driver = new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build()
 
     greetRoom = =>
-      user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-      @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!", 'messageId'
+      user = @robot.brain.userForId '1'
+      @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!"
 
       driver.findElement(webdriver.By.tagName('body')).then (body) =>
         body.getText().then (text) =>
           # @lines_a = text.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
-          @lineLength = text.split("\n").length
+          lines = _.reject text.split("\n"), (line) ->
+            line == 'Send a message...' ||
+            line.match("is typing") ||
+            line.match("is active") ||
+            line.match("•")
+          @lineLength = lines.length
           @.emit 'connected'
           @listener.start()
 
@@ -106,40 +113,36 @@ class Hangouts extends Adapter
       , 500
 
     self.emit 'connected'
-
+    @last_message = ''
     @listener = new Listener
     @listener.driver = @driver
     @count = 0
     @listener.on 'report', () =>
       driver.findElement(webdriver.By.tagName('body')).then (body) =>
         body.getText().then (text) =>
-          console.log("Previous line length: #{@lineLength}")
           newLines = text.split("\n")
-          newLineLength = newLines.length
-          console.log("New line length: #{newLineLength}")
-          diff = newLines.slice(@lineLength, newLineLength + 1)
-          console.log("Diff: #{diff.length}")
+          newLinesClean = _.reject newLines, (line) ->
+            line == 'Send a message...' ||
+            line.match("is typing") ||
+            line.match("is active") ||
+            line.match("•")
+          newLineLength = newLinesClean.length
+          diff = newLinesClean.slice(@lineLength, newLineLength + 1)
           @lineLength = newLineLength
-          # # lines_b = text.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
-          # diff = _.difference(lines_b, @lines_a)
 
+          if diff.length > 0
+            regex = new RegExp(@robot.name, 'i')
 
-          # @lines_a = lines_b
-
-          # if diff.length > 0
-            # regex = new RegExp(@robot.name, 'i')
-
-            # diff.map (line) =>
-            #   if line.match(regex)
-            #     saysIndex = line.indexOf('says ')
-            #     if saysIndex > 0
-            #       line = line.substr(saysIndex + 5)
-            #     if line != @previous_line and @count > 1
-            #       console.log("I heard you say '#{line}'")
-            #       user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-            #       @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!", 'messageId'
-            #       @count = 1
-            #     @previous_line = line
+            diff.map (line) =>
+              if line.match(regex)
+                saysIndex = line.indexOf('says ')
+                if saysIndex > 0
+                  line = line.substr(saysIndex + 5)
+                if line != @previous_line
+                  console.log("I heard you say '#{line}'")
+                  user = @robot.brain.userForId '1'
+                  @receive new TextMessage user, line
+                @previous_line = line
 
     @driver = driver
 
