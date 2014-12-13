@@ -28,7 +28,7 @@ class Hangouts extends Adapter
   run: ->
     self = @
 
-    driver = new webdriver.Builder().withCapabilities(webdriver.Capabilities.htmlunitwithjs()).build()
+    driver = new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build()
 
     greetRoom = =>
       user = @robot.brain.userForId '1'
