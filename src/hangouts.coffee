@@ -103,7 +103,11 @@ class Hangouts extends Adapter
     @listener = new Listener
     @listener.driver = @driver
     @listener.on 'report', () =>
-      console.log("Listening!")
+      driver.findElement(webdriver.By.tagName('body')).then (body) ->
+        body.getText().then (text) ->
+          console.log text
+
+      console.log "Listening!"
 
     @driver = driver
 
