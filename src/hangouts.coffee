@@ -172,8 +172,8 @@ class Hangouts extends Adapter
                   @id += 1
         else
           body.getAttribute('innerHTML').then (html) =>
-            linez = html.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
-            newLinesClean = _.reject linez, (line) ->
+            newLines = html.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
+            newLinesClean = _.reject newLines, (line) ->
               line == 'Send a message...' ||
               line.match("is typing") ||
               line.match("is active") ||
@@ -191,9 +191,6 @@ class Hangouts extends Adapter
               line == "Now"
             newLineLength = newLinesClean.length
             diff = newLinesClean.slice(@lineLength, newLineLength + 1)
-            console.log("linelengthold: #{@lineLength}")
-            console.log("newLineLength: #{newLineLength}")
-            console.log("diff: #{diff.length}")
             @lineLength = newLineLength
 
             if diff.length > 0
