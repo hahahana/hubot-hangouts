@@ -68,8 +68,10 @@ class Hangouts extends Adapter
               line == "Message not delivered." ||
               line == "Send an SMS message..." ||
               line == "History is off" ||
-              line == "Read up to here"
-            console.log(lines)
+              line == "Read up to here" ||
+              line == "Now"
+            @lineLength = lines.length
+            @listener.start()
 
     switchContentToChat = ->
       driver.findElements(webdriver.By.css('.talk_chat_widget')).then (widgets) =>
@@ -144,29 +146,55 @@ class Hangouts extends Adapter
     @count = 0
     @listener.on 'report', () =>
       driver.findElement(webdriver.By.tagName('body')).then (body) =>
-        body.getText().then (text) =>
-          newLines = text.split("\n")
-          newLinesClean = _.reject newLines, (line) ->
-            line == 'Send a message...' ||
-            line.match("is typing") ||
-            line.match("is active") ||
-            line.match("•")
-          newLineLength = newLinesClean.length
-          diff = newLinesClean.slice(@lineLength, newLineLength + 1)
-          @lineLength = newLineLength
+        if @browserTest == 'chrome'
+          body.getText().then (text) =>
+            newLines = text.split("\n")
+            newLinesClean = _.reject newLines, (line) ->
+              line == 'Send a message...' ||
+              line.match("is typing") ||
+              line.match("is active") ||
+              line.match("•")
+            newLineLength = newLinesClean.length
+            diff = newLinesClean.slice(@lineLength, newLineLength + 1)
+            @lineLength = newLineLength
 
-          if diff.length > 0
-            regex = new RegExp(@robot.name, 'i')
+            if diff.length > 0
+              regex = new RegExp(@robot.name, 'i')
 
-            diff.map (line) =>
-              if line.match(regex)
-                saysIndex = line.indexOf('says ')
-                if saysIndex > 0
-                  line = line.substr(saysIndex + 5)
-                console.log("I heard you say '#{line}'")
-                user = @robot.brain.userForId '1'
-                @receive new TextMessage user, line, @id
-                @id += 1
+              diff.map (line) =>
+                if line.match(regex)
+                  saysIndex = line.indexOf('says ')
+                  if saysIndex > 0
+                    line = line.substr(saysIndex + 5)
+                  console.log("I heard you say '#{line}'")
+                  user = @robot.brain.userForId '1'
+                  @receive new TextMessage user, line, @id
+                  @id += 1
+        else
+          body.getAttribute('innerHTML').then (html) =>
+            linez = html.replace(/(<([^>]+)>)/ig, "|").split("|").filter(Boolean)
+            newLinesClean = _.reject linez, (line) ->
+              line == 'Send a message...' ||
+              line.match("is typing") ||
+              line.match("is active") ||
+              line.match("mins") ||
+              line.match("•") ||
+              line == " " ||
+              line == "  " ||
+              line == "..." ||
+              line.match("function init()") ||
+              line.match('You blocked') ||
+              line == "Message not delivered." ||
+              line == "Send an SMS message..." ||
+              line == "History is off" ||
+              line == "Read up to here" ||
+              line == "Now"
+            newLineLength = newLinesClean.length
+            diff = newLinesClean.slice(@lineLength, newLineLength + 1)
+            console.log("linelengthold: #{@lineLength}")
+            console.log("newLineLength: #{newLineLength}")
+            console.log("diff: #{diff.length}")
+            @lineLength = newLineLength
 
     @driver = driver
     @id = 1
