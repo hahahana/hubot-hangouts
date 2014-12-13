@@ -6,7 +6,7 @@ _ = require('underscore')
 
 class Hangouts extends Adapter
   send: (envelope, strings...) ->
-    if @last_message != strings[0]
+    if @last_message_id != envelope.message.id
       unless process.platform is 'win32'
         console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
       else
@@ -16,7 +16,7 @@ class Hangouts extends Adapter
         editor.sendKeys str for str in strings
         editor.sendKeys webdriver.Key.ENTER
 
-    @last_message = strings[0]
+    @last_message_id = envelope.message.id
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -32,7 +32,7 @@ class Hangouts extends Adapter
 
     greetRoom = =>
       user = @robot.brain.userForId '1'
-      @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!"
+      @receive new TextMessage user, "#{@robot.name} echo #{@robot.name} in da house!", 0
 
       driver.findElement(webdriver.By.tagName('body')).then (body) =>
         body.getText().then (text) =>
@@ -113,7 +113,7 @@ class Hangouts extends Adapter
       , 500
 
     self.emit 'connected'
-    @last_message = ''
+    @last_message
     @listener = new Listener
     @listener.driver = @driver
     @count = 0
@@ -138,14 +138,13 @@ class Hangouts extends Adapter
                 saysIndex = line.indexOf('says ')
                 if saysIndex > 0
                   line = line.substr(saysIndex + 5)
-                if line != @previous_line
-                  console.log("I heard you say '#{line}'")
-                  user = @robot.brain.userForId '1'
-                  @receive new TextMessage user, line
-                @previous_line = line
+                console.log("I heard you say '#{line}'")
+                user = @robot.brain.userForId '1'
+                @receive new TextMessage user, line, @id
+                @id += 1
 
     @driver = driver
-
+    @id = 1
     hangoutName = process.env.HANGOUT_NAME
     email = process.env.HANGOUTS_EMAIL
     password = process.env.HANGOUTS_PASSWORD
