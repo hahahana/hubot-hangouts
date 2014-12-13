@@ -58,14 +58,18 @@ class Hangouts extends Adapter
               line == 'Send a message...' ||
               line.match("is typing") ||
               line.match("is active") ||
+              line.match("mins") ||
               line.match("•") ||
               line == " " ||
               line == "  " ||
               line == "..." ||
               line.match("function init()") ||
-              line.match('You blocked')
+              line.match('You blocked') ||
+              line == "Message not delivered." ||
+              line == "Send an SMS message..." ||
+              line == "History is off" ||
+              line == "Read up to here"
             console.log(lines)
-
 
     switchContentToChat = ->
       driver.findElements(webdriver.By.css('.talk_chat_widget')).then (widgets) =>
